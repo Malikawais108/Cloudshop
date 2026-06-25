@@ -25,7 +25,7 @@ variable "node_count" {
 variable "node_vm_size" {
   description = "VM size for AKS nodes"
   type        = string
-  default     = "Standard_B2s"
+  default     = "standard_D2ds_v7"
 }
 
 variable "acr_name" {
@@ -43,7 +43,7 @@ variable "vnet_name" {
 variable "vnet_address_space" {
   description = "VNet address space"
   type        = string
-  default     = "10.0.0.0/16"
+  default     = "10.1.0.0/16"
 }
 
 variable "subnet_name" {
@@ -55,5 +55,5 @@ variable "subnet_name" {
 variable "subnet_prefix" {
   description = "Subnet address prefix"
   type        = string
-  default     = "10.0.1.0/24"
+  default     = "10.1.1.0/24"
 }
