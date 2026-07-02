@@ -38,26 +38,38 @@ jobs:
           severity: 'CRITICAL,HIGH'
           exit-code: '0'
 
-      # Step 5 - Build Docker image
+      # Step 5 - SonarQube scan
+      - name: SonarQube Scan
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+        with:
+          args: >
+            -Dsonar.projectKey=cloudshop
+            -Dsonar.projectName=CloudShop
+            -Dsonar.sources=./backend
+
+      # Step 6 - Build Docker image
       - name: Build Docker image
         run: |
           docker build -t ${{ secrets.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }} ./backend
           docker tag ${{ secrets.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }} ${{ secrets.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
 
-      # Step 6 - Push to ACR
+      # Step 7 - Push to ACR
       - name: Push image to ACR
         run: |
           docker push ${{ secrets.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
           docker push ${{ secrets.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
 
-      # Step 7 - Set AKS context
+      # Step 8 - Set AKS context
       - name: Set AKS context
         uses: azure/aks-set-context@v3
         with:
           resource-group: cloudshop-rg
           cluster-name: cloudshop-aks
 
-      # Step 8 - Deploy to AKS
+      # Step 9 - Deploy to AKS
       - name: Deploy to AKS
         run: |
           kubectl apply -f k8s/configmap.yaml
